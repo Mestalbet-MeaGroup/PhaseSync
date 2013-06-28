@@ -1,0 +1,51 @@
+% by Ziv Yekutieli - ziv.yekutieli@hotmail.com
+% this function generates a time vector to be used on plots
+% Inputs:
+%      t
+%      axis_unit 's'\'m'\'h' to be used in the axis 
+%      
+% Outputs:
+%       tplot - the time vector to be used
+%       
+%e.g. [tplot] = ZGenerateTimeStamps(t,ic,10)
+% 301010 - rev1
+
+
+function [channels,electrodes,FR] = ZGenerateTimeStamps(t,axis_unit,window)
+
+if strcmp(ColorMode,'Regular')
+    fprintf('\n Calculating Firing Rate per electrode \n')
+        Rplot=Dendro1; %no change to original dendrogram
+        m1=max(Rplot(b1))*Scale; %#ok<FNDSB> %this is the maximum value at R that is not 1, which is the self sync value of each electrode
+        fprintf([' Regular ColorMode chosen - Max = ', num2str(m1),' Scale = ',num2str(Scale),'\n']);
+        fprintf([' CMax = ', num2str(m1*Scale),'\n']);
+elseif strcmp(ColorMode,'Normalize')
+        Rplot=ZMatNormalize(Dendro1); %normalize original dendrogram
+        m1=max(Rplot(b1))*Scale; %#ok<FNDSB> %this is the maximum value at R that is not 1, which is the self sync value of each electrode
+        fprintf([' Norm ColorMode chosen - Max = ', num2str(m1),' Scale = ',num2str(Scale),'\n']);
+        fprintf([' CMax = ', num2str(m1*Scale),'\n']);
+elseif strcmp(ColorMode,'Emphasize')
+        Rplot=ZMatEmphasize(Dendro1,Power); %log scale original dendrogram
+        m1=max(Rplot(b1))*Scale; %#ok<FNDSB> %this is the maximum value at R that is not 1, which is the self sync value of each electrode
+        fprintf([' Norm ColorMode chosen - Max = ', num2str(m1),' Scale = ',num2str(Scale),'\n']);
+        fprintf([' CMax = ', num2str(m1*Scale),'\n']);
+else
+        error('please choose Color Mode - Regular,Norm or Power  \n'); 
+end;
+
+channels = ic(1,:);
+electrodes = ic(2,:);
+a=size(ic,2);
+tnew=t/12000;
+tstart=min(tnew);
+tend=max(tnew);
+frames=floor((tend-tstart)/window); %number of frames, each with duration of window for this recording
+for i=1:a
+    spikes=tnew(ic(3,i):ic(4,i)) ;%this is the vector of all the spikes in t, for the electorde we deal with
+    for j=0:frames-1
+        FR(i,j+1)=length(find(spikes >= tstart+j*window & spikes < tstart +(j+1)*window));
+    end
+end
+fprintf('\n Calculating Firing Rate is done \n')
+
+    

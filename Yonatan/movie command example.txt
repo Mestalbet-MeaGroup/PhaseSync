@@ -1,0 +1,1 @@
+ [WT4AVI] = CorrOnPhysAVI(WT4FixPhysMatPre , WT4FixPhysMatPost,WT4RcolomnPre,WT4RcolomnPost, WT4FixVElecPre, WT4FixVElecPost, 0.3,'WT.4')
